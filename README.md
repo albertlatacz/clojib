@@ -2,7 +2,6 @@ clojib
 ======
 Some useful functions for Clojure
 
-
 License
 =======
 Copyright (C) Albert Latacz
