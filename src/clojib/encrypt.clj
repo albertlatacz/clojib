@@ -3,25 +3,36 @@
            (java.security SecureRandom)
            (javax.crypto.spec PBEKeySpec)
            (javax.crypto SecretKeyFactory)
-           (sun.misc BASE64Encoder)))
+           (sun.misc BASE64Encoder BASE64Decoder)))
+
+(defn- encode-base64 [xs]
+  (.encode (BASE64Encoder.) xs))
+
+(defn- decode-base64 [s]
+  (.decodeBuffer (BASE64Decoder.) s))
 
 (defn generate-salt []
-  (let [random (SecureRandom/getInstance "SHA1PRNG")
-        salt (byte-array 8)]
-    (.nextBytes random salt)
+  (let [salt (byte-array 16)]
+    (.nextBytes (SecureRandom/getInstance "SHA1PRNG") salt)
     salt))
 
 (defn encrypt-password
-  ([passwd] (encrypt-password (.getBytes "kj3hd9ojakLjLJ800H*0J9UY009J") passwd))
+  ([passwd] (encrypt-password (generate-salt) passwd))
   ([salt passwd]
-    (let [spec (PBEKeySpec. (.toCharArray passwd), salt, 20000, 160)
-          secret-factory (SecretKeyFactory/getInstance "PBKDF2WithHmacSHA1")]
-      (.. secret-factory
-        (generateSecret spec)
-        (getEncoded)))))
+    (encode-base64
+      (let [spec (PBEKeySpec. (.toCharArray passwd), salt, 20000, 256)
+            secret-factory (SecretKeyFactory/getInstance "PBKDF2WithHmacSHA1")]
+        (byte-array
+          (concat
+            (.. secret-factory (generateSecret spec) (getEncoded))
+            salt))))))
 
+(defn extract-salt [encrypted]
+  (let [encrypted-bytes (decode-base64 encrypted)]
+    (byte-array (drop 32 encrypted-bytes))))
 
-(defn encode-base64 [xs]
-  (.encode (BASE64Encoder.) xs))
+(defn passwords= [raw encrypted]
+  (= encrypted (encrypt-password (extract-salt encrypted) raw)))
+
 
 
