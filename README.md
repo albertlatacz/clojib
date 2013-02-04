@@ -1,6 +1,6 @@
 clojib
 ======
-Some useful functions for Clojure
+Some usefull Clojure functions.
 
 License
 =======
