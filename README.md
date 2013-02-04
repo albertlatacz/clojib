@@ -1,5 +1,7 @@
 clojib
 ======
+[![Build Status](https://secure.travis-ci.org/albertlatacz/clojib.png)](http://travis-ci.org/albertlatacz/clojib)
+
 Some usefull Clojure functions.
 
 License
