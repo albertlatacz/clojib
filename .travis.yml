@@ -1,7 +1,10 @@
 language: clojure
 env:
-  global:
+    - CLOJIB_BUILD_NUMBER=$TRAVIS_BUILD_NUMBER
+
+global:
     - secure: "UN46bvRY1f+fwwyLle7JPC3elcwGYgYPjm/L+s7R11ZugRn4aflv9qZXGoVq\nCepen7lu8fuZQTZwdIpHulYUwJWKeyN83Zy+TkfWl7sQAArIa0fph9HfVRKt\n3s5dRrNKy27uflNagX+GRfagjZzT5K2Nfrotcp0wuco7cE3tq2I="
+
 script:
     - lein test
     - ./bin/push.sh

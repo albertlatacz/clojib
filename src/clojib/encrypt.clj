@@ -11,6 +11,10 @@
 (defn- decode-base64 [s]
   (.decodeBuffer (BASE64Decoder.) s))
 
+(defn- extract-salt [encrypted]
+  (byte-array
+    (drop 32 (decode-base64 encrypted))))
+
 (defn generate-salt []
   (let [salt (byte-array 16)]
     (.nextBytes (SecureRandom/getInstance "SHA1PRNG") salt)
@@ -26,10 +30,6 @@
           (concat
             (.. secret-factory (generateSecret spec) (getEncoded))
             salt))))))
-
-(defn extract-salt [encrypted]
-  (let [encrypted-bytes (decode-base64 encrypted)]
-    (byte-array (drop 32 encrypted-bytes))))
 
 (defn passwords= [raw encrypted]
   (= encrypted (encrypt-password (extract-salt encrypted) raw)))
